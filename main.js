@@ -5,6 +5,8 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 let particleArray = [];
+adjustX = 0; //to move text on the canvas area (to the right, top etc.)
+adjustY = 0;
 
 //handle mouse
 const mouse = {
@@ -20,9 +22,10 @@ window.addEventListener("mousemove", function (e) {
 
 ctx.fillStyle = "white";
 ctx.font = "30px Verdana";
-ctx.fillText("A", 0, 30);
+ctx.fillText("WOW", 0, 30);
 
-const data = ctx.getImageData(0, 0, 100, 100);
+const textCoordinates = ctx.getImageData(0, 0, 100, 100);
+console.log("textCoordinates", textCoordinates.data);
 
 class Particle {
   constructor(x, y) {
@@ -34,7 +37,7 @@ class Particle {
     this.density = Math.random() * 30 + 1;
   }
   draw() {
-    ctx.fillStyle = "red";
+    ctx.fillStyle = "white";
     ctx.beginPath(); //because we need to create circle. think of it as pencil touching down on canvas to start drawing
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
     ctx.closePath();
@@ -69,15 +72,27 @@ class Particle {
 
 function init() {
   particleArray = [];
-  for (let i = 0; i < 2000; i++) {
-    let x = Math.random() * canvas.width;
-    let y = Math.random() * canvas.height;
-    particleArray.push(new Particle(x, y));
+  for (let y = 0, y2 = textCoordinates.height; y < y2; y++) {
+    for (let x = 0, x2 = textCoordinates.width; x < x2; x++) {
+      if (
+        textCoordinates.data[y * 4 * textCoordinates.width + x * 4 + 3] > 128
+      ) {
+        let positionX = x + adjustX;
+        let positionY = y + adjustY;
+        particleArray.push(new Particle(positionX * 20, positionY * 20));
+      }
+    }
   }
+
+  //for random dots rendering
+  //   for (let i = 0; i < 2000; i++) {
+  //     let x = Math.random() * canvas.width;
+  //     let y = Math.random() * canvas.height;
+  //     particleArray.push(new Particle(x, y));
+  //   }
 }
 
 init();
-console.log(particleArray);
 
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
