@@ -100,6 +100,29 @@ function animate() {
     particleArray[i].draw();
     particleArray[i].update();
   }
+  connect();
   requestAnimationFrame(animate);
 }
 animate();
+
+//cycle through the arrayof particles that make upour letter and measure dictance between each particle. if the are close enough we will take coordinates of the first particle and we draw the line to the coordinates of the second particle.
+function connect() {
+  let opacityValue = 1;
+  for (let a = 0; a < particleArray.length; a++) {
+    for (let b = a; b < particleArray.length; b++) {
+      let dx = particleArray[a].x - particleArray[b].x;
+      let dy = particleArray[a].y - particleArray[b].y;
+      let distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < 30) {
+        opacityValue = 1 - distance / 30;
+        ctx.strokeStyle = "rgba(255,255,255," + opacityValue + ")";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(particleArray[a].x, particleArray[a].y);
+        ctx.lineTo(particleArray[b].x, particleArray[b].y);
+        ctx.stroke();
+      }
+    }
+  }
+}
